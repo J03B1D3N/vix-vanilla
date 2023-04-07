@@ -8,3 +8,5 @@ bet tada yra problema, kad tame queue negaliu prieiti variablu. Jeigu a, c ir d 
 
 
 jeigu nesuveikia promisai, tada tiesiog prasausim antra FOR loopa. pirmas for loopas surenka visus duomenis, antras for loopas juos sutvarko ir sudeda i vietas. (nesu tikras kad suveiks)
+
+naudoti global variabla kaip indexa kuri mes ++ kiekviena karta kai iteritinam over the foor loopa. ir tada ta indexa naudojam antram for loopui kuris sudelioja sutvarkytas value i vieta.
