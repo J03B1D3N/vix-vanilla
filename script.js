@@ -22,25 +22,80 @@ async function ApiCall() {
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
     const dummy = information[7]
-    console.log(dummy)
-
-    const example = eval("=52")
-    console.log(example)
     
-        //     for(let data = 0; data < dummy.data.length; data++){
-        //         console.log('ARRAY ' + data)
+
     
-        //         for(let element = 0; element < dummy.data[data].length; element++) {
+            for(let data = 0; data < dummy.data.length; data++){
+                console.log('ARRAY ' + data)
     
-        //             console.log('element ' + element)
+                for(let element = 0; element < dummy.data[data].length; element++) {
+    
+                    console.log('element ' + element)
 
-        //             eval('var ' + alphabet[element] + (data + 1) + '= ' + 'dummy.data[data][element]' + ";")
-        //         }
-        //     }
+                    eval('var ' + alphabet[element] + (data + 1) + '= ' + 'dummy.data[data][element]' + ";")
+
+                    dummy.data[data][element] = eval(alphabet[element] + (data + 1))
+
+                    // queue.push(eval(alphabet[element] + (data + 1)))
+                }
+            }
+
+            console.log(dummy)
+
+        
+
+            let queue = [A1, B1, C1, D1]
+
+            console.log(queue)
+
+            D1 = 'lololol'
+
+            console.log(queue)
+
+            
+        //    queue = queue.map(element => {
+        //         return handleResults(element)
+        //     })
 
 
-        // console.log(A1, B1, C1, D1)
-        // console.log(A2, B2, C2, D2)
+
+
+        console.log(A1, B1, C1, D1)
+        console.log(A2, B2, C2, D2)
+
+        function handleResults(argument) {
+
+            let processedArgument
+
+            if(typeof(argument) == 'string') {
+
+
+                if(argument.includes('=')){
+
+                   processedArgument = argument.replace('=', '')
+
+                    
+                    
+                   
+
+                }
+
+                return processedArgument
+                
+            } else return argument
+
+            
+
+            
+
+            
+        }
+
+        function MULTIPLY(...args) {
+            return args.reduce(function (acc, cur) {
+                return acc * cur
+            })
+        }
     
     
     
