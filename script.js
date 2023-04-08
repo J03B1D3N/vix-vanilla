@@ -14,9 +14,7 @@ async function ApiCall() {
     }
     let information  = processedData.sheets
 
-    console.log(StringifyObject(processedData))
-
-    console.log(information[14])
+    // console.log(StringifyObject(processedData))
 
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
@@ -81,14 +79,16 @@ async function ApiCall() {
 
                 if(argument.includes('=')){
 
-                   processedArgument = argument.replace('=', '')
+                    processedArgument = argument.replace('=', '')
+                    return eval(processedArgument)
+                } else return argument
 
-                }
-
-                return eval(processedArgument)
+               
                 
-            } else return argument
+            }
         }
+
+
 
         function MULTIPLY(...args) {
             return args.reduce(function (acc, cur) {
@@ -115,12 +115,19 @@ async function ApiCall() {
             return !a
         }
         function AND(...args) {
-            return args.reduce(function (acc, cur) {
+            
+        const includesNotABoolean = (element) => typeof element === 'string' || typeof element === 'number'
+            
+            return (args.some(includesNotABoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
                 return acc && cur
-            })
+            }))
+           
         }
-        function OR(a,b) {
-            return (a || b ? true : false)
+        function OR(...args) {
+            const includesNotABoolean = (element) => typeof element === 'string' || typeof element === 'number'
+            return (args.some(includesNotABoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
+                return acc || cur
+            }))
         }
         function IF(condition, arg1, arg2) {
             if(condition) {
@@ -134,7 +141,6 @@ async function ApiCall() {
         }
 
         console.log(StringifyObject(processedData))
-    
     
 }
 ApiCall();
