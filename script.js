@@ -6,78 +6,72 @@ async function ApiCall() {
 
     const processedData = await apiCall.json()
 
-    // console.log(data)
 
-    const StringifyObject = () => {
+    const StringifyObject = (arg) => {
         return (
-            JSON.stringify(processedData, null, 2)
+            JSON.stringify(arg, null, 2)
         )
     }
+    let information  = processedData.sheets
 
-    const information = processedData.sheets
-     
-    // console.log(information)
-    // console.log(StringifyObject())
+    console.log(StringifyObject(processedData))
+
+    console.log(information[14])
 
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
-    const dummy = information[7]
-    
     let queue = []
-    
-            for(let data = 0; data < dummy.data.length; data++){
-                console.log('ARRAY ' + data)
-                queue[data] = []
-    
-                for(let element = 0; element < dummy.data[data].length; element++) {
-    
-                    console.log('element ' + element)
 
-                    eval('var ' + alphabet[element] + (data + 1) + '= ' + 'dummy.data[data][element]' + ";")
+    
 
-                    dummy.data[data][element] = eval(alphabet[element] + (data + 1))
 
-                    queue[data].push(eval(alphabet[element] + (data + 1)))
-                }
+    
+    for(let sheet = 0;sheet < information.length; sheet++) {
+        // console.log('SHEET ' + sheet)
+
+        queue = []
+
+        for(let data = 0; data < information[sheet].data.length; data++){
+        // console.log('ARRAY ' + data)
+        queue[data] = []
+
+            for(let element = 0; element < information[sheet].data[data].length; element++) {
+
+                // console.log('element ' + element)
+
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'information[sheet].data[data][element]' + ";")
+
+                queue[data].push(eval(alphabet[element] + (data + 1)))
             }
 
-            console.log(queue)
+        }
 
-            for(let queueCount = 0; queueCount < queue.length; queueCount++) {
+        for(let queueCount = 0; queueCount < queue.length; queueCount++) {
 
-                queue[queueCount] = queue[queueCount].map(element => {
-                        return handleResults(element)
-                    })
+            // console.log('processing')
 
-            }
-
-            console.log(queue)
-
-            // eval('var' + alphabet[3] + (1) + '=' + queue[data][element])
-
-            for( let data = 0; data < queue.length; data++ ) {
-
-                
-
-                for( let element = 0; element < queue[data].length; element++) {
-
-                    dummy.data[data][element] = queue[data][element]
-
-
-                    
-
-                }
-
-            }
-
-            console.log(dummy)
+            queue[queueCount] = queue[queueCount].map(element => {
+                return handleResults(element)
+            })
+           
             
+            // console.log('processed')
+        }
 
+        for( let data = 0; data < queue.length; data++ ) {
 
+            // console.log('returning results')
 
-        // console.log(A1, B1, C1, D1)
-        // console.log(A2, B2, C2, D2)
+            for( let element = 0; element < queue[data].length; element++) {
+                information[sheet].data[data][element] = queue[data][element]
+            }
 
+            // console.log('results returned')
+
+        }
+     }
+
+    
         function handleResults(argument) {
 
             let processedArgument
@@ -89,13 +83,7 @@ async function ApiCall() {
 
                    processedArgument = argument.replace('=', '')
 
-                    
-                    
-                   
-
                 }
-
-                
 
                 return eval(processedArgument)
                 
@@ -107,37 +95,46 @@ async function ApiCall() {
                 return acc * cur
             })
         }
-    
-    
-    
-    
-    
-    
-    // for(sheet = 0;sheet < information.length; sheet++) {
-    //     console.log('SHEET ' + sheet)
+        function SUM(...args) {
+            return args.reduce(function (acc, cur) {
+                return acc + cur
+            })
+        }
+        function DIVIDE(...args) {
+            return args.reduce(function (acc, cur) {
+                return acc / cur
+            })
+        }
+        function GT(a,b) {
+            return (a > b ? true : false)
+        }
+        function EQ(a,b) {
+            return (a == b ? true : false)
+        }
+        function NOT(a) {
+            return !a
+        }
+        function AND(...args) {
+            return args.reduce(function (acc, cur) {
+                return acc && cur
+            })
+        }
+        function OR(a,b) {
+            return (a || b ? true : false)
+        }
+        function IF(condition, arg1, arg2) {
+            if(condition) {
+                return arg1
+            } else return arg2
+        }
+        function CONCAT(...args) {
+            return args.reduce(function (acc, cur) {
+                return acc.concat(cur)
+            })
+        }
 
-    //     for(let data = 0; data < information[sheet].data.length; data++){
-    //         console.log('ARRAY ' + data)
-
-    //         for(let element = 0; element < information[sheet].data[data].length; element++) {
-
-    //             console.log('element ' + element)
-    //             // eval('var ' + alphabet[i] + (c + 1) + '= ' + data2[c][i] + ";")
+        console.log(StringifyObject(processedData))
     
-    //         }
-
-    //     }
-    // }
-  
-    
-
-       
-    // }
-
-    
-    
-    // console.log(A1, B1, C1, D1)
-
     
 }
 ApiCall();
