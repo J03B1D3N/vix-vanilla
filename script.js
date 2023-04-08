@@ -10,7 +10,7 @@ async function ApiCall() {
 
     const StringifyObject = () => {
         return (
-            JSON.stringify(data, null, 2)
+            JSON.stringify(processedData, null, 2)
         )
     }
 
@@ -23,10 +23,11 @@ async function ApiCall() {
 
     const dummy = information[7]
     
-
+    let queue = []
     
             for(let data = 0; data < dummy.data.length; data++){
                 console.log('ARRAY ' + data)
+                queue[data] = []
     
                 for(let element = 0; element < dummy.data[data].length; element++) {
     
@@ -36,32 +37,46 @@ async function ApiCall() {
 
                     dummy.data[data][element] = eval(alphabet[element] + (data + 1))
 
-                    // queue.push(eval(alphabet[element] + (data + 1)))
+                    queue[data].push(eval(alphabet[element] + (data + 1)))
                 }
             }
 
+            console.log(queue)
+
+            for(let queueCount = 0; queueCount < queue.length; queueCount++) {
+
+                queue[queueCount] = queue[queueCount].map(element => {
+                        return handleResults(element)
+                    })
+
+            }
+
+            console.log(queue)
+
+            // eval('var' + alphabet[3] + (1) + '=' + queue[data][element])
+
+            for( let data = 0; data < queue.length; data++ ) {
+
+                
+
+                for( let element = 0; element < queue[data].length; element++) {
+
+                    dummy.data[data][element] = queue[data][element]
+
+
+                    
+
+                }
+
+            }
+
             console.log(dummy)
-
-        
-
-            let queue = [A1, B1, C1, D1]
-
-            console.log(queue)
-
-            D1 = 'lololol'
-
-            console.log(queue)
-
             
-        //    queue = queue.map(element => {
-        //         return handleResults(element)
-        //     })
 
 
 
-
-        console.log(A1, B1, C1, D1)
-        console.log(A2, B2, C2, D2)
+        // console.log(A1, B1, C1, D1)
+        // console.log(A2, B2, C2, D2)
 
         function handleResults(argument) {
 
@@ -80,15 +95,11 @@ async function ApiCall() {
 
                 }
 
-                return processedArgument
+                
+
+                return eval(processedArgument)
                 
             } else return argument
-
-            
-
-            
-
-            
         }
 
         function MULTIPLY(...args) {
