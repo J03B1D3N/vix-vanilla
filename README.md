@@ -12,3 +12,12 @@ probema su promisais yra tame kad as neturiu budo kaip
 jeigu nesuveikia promisai, tada tiesiog prasausim antra FOR loopa. pirmas for loopas surenka visus duomenis, antras for loopas juos sutvarko ir sudeda i vietas. (nesu tikras kad suveiks)
 
 naudoti global variabla kaip indexa kuri mes ++ kiekviena karta kai iteritinam over the foor loopa. ir tada ta indexa naudojam antram for loopui kuris sudelioja sutvarkytas value i vieta.
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+
+paskutinis sheetas sudetingas pasirodo.  jo rendering atbulai negaliu, nes tada paskutinis variable buna undefined.
+
+vadinasi turi buti forward renderinimas, bet backwards processinimas. 
+
+

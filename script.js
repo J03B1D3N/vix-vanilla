@@ -79,6 +79,7 @@ async function ApiCall() {
             }
 
      }
+    }
      console.log(StringifyObject(processedData))   
 
 
@@ -166,5 +167,5 @@ async function ApiCall() {
         }
 
     
-}}
+}
 ApiCall();
