@@ -20,24 +20,18 @@ async function ApiCall() {
 
     let queue = []
 
-    
-
 
     
     for(let sheet = 0;sheet < information.length; sheet++) {
-        // console.log('SHEET ' + sheet)
 
         queue = []
 
         for(let data = 0; data < information[sheet].data.length; data++){
-        // console.log('ARRAY ' + data)
         queue[data] = []
 
             for(let element = 0; element < information[sheet].data[data].length; element++) {
 
-                // console.log('element ' + element)
-
-                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'information[sheet].data[data][element]' + ";")
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
 
                 queue[data].push(eval(alphabet[element] + (data + 1)))
             }
@@ -49,11 +43,12 @@ async function ApiCall() {
             // console.log('processing')
 
             queue[queueCount] = queue[queueCount].map(element => {
-                return handleResults(element)
+                return handleScraping(element)
             })
            
             
             // console.log('processed')
+            // console.log(queue)
         }
 
         for( let data = 0; data < queue.length; data++ ) {
@@ -67,26 +62,56 @@ async function ApiCall() {
             // console.log('results returned')
 
         }
+
+        for(let sheet = 0;sheet < information.length; sheet++) {
+
+            queue = []
+    
+            for(let data = 0; data < information[sheet].data.length; data++){
+            queue[data] = []
+    
+                for(let element = 0; element < information[sheet].data[data].length; element++) {
+    
+                    eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
+    
+                }
+    
+            }
+
      }
+     console.log(StringifyObject(processedData))   
+
 
     
-        function handleResults(argument) {
+     function handleScraping(argument) {
 
-            let processedArgument
-
-            if(typeof(argument) == 'string') {
-
-
+        try{
+    
+            let processedArgument = argument
+    
+       
+            if(typeof argument == 'string') {
+    
                 if(argument.includes('=')){
-
+    
                     processedArgument = argument.replace('=', '')
-                    return eval(processedArgument)
-                } else return argument
-
-               
-                
+    
+                    processedArgument = eval(processedArgument)
+    
+                } 
+    
             }
+            
+        return processedArgument
+    
         }
+    
+        catch {
+            return argument 
+        }
+    
+        
+    }
 
 
 
@@ -140,7 +165,6 @@ async function ApiCall() {
             })
         }
 
-        console.log(StringifyObject(processedData))
     
-}
+}}
 ApiCall();
