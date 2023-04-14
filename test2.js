@@ -1,7 +1,3 @@
-var A1 = 52
+let queue = [null, null, 5]
 
-var B1 = 65
-
-eval(A1 = B1)
-
-console.log(eval(A1))
+console.log(queue.includes(null))

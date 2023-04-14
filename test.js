@@ -42,23 +42,35 @@ async function ApiCall() {
 
                 //clean the rows with each iteration
                 queue[data] = []
+
+                // //loops through collumns (ABCDEFG...)
+                // for(let element = 0;  element < information.data[data].length; element++) {
+                //     const variable = 'var ' + alphabet[element] + (data + 1)
+    
+                //     eval(variable + '= ' + 'handleTest(information.data[data][element])' + ";")
+                    
+                //     queue[data].push(eval(alphabet[element] + (data + 1)))
+                //     // console.log(alphabet[element] + (data + 1), eval(alphabet[element] + (data + 1)))
+                // }
         
                     //loops through collumns (ABCDEFG...)
-                    for(let element = information.data[data].length; element > 0; element--) {
+                    for(let element = information.data[data].length - 1; element > -1; element--) {
                         const variable = 'var ' + alphabet[element] + (data + 1)
         
-                        eval(variable + '= ' + 'handleTest(information.data[data][element])' + ";")
+                        eval(variable + '= ' + 'handleScraping(information.data[data][element])' + ";")
                         
                         queue[data].push(eval(alphabet[element] + (data + 1)))
+                        console.log(alphabet[element] + (data + 1), eval(alphabet[element] + (data + 1)))
                     }
 
-                    console.log(queue)
+
                 }
 
 
     }
     console.log(queue)
     console.log(H1)
+    console.log(A1)
     
 
 
