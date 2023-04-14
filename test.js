@@ -2,7 +2,7 @@ async function ApiCall() {
 
     const apiCall = await fetch('https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/sheets')
 
-    const processedData = await apiCall.json()
+    let processedData = await apiCall.json()
 
 
     const StringifyObject = (arg) => {
@@ -10,104 +10,167 @@ async function ApiCall() {
             JSON.stringify(arg, null, 2)
         )
     }
+    // console.log(StringifyObject(processedData))
+    let information  = processedData.sheets
 
-    //store the sheets in variable
-    let information  = processedData.sheets[23]
+    // console.log(StringifyObject(processedData))
 
-    //initialise the alphabet array
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
-    //innitialise queue
     let queue = []
 
+    let submission  = {
+        "email": "justas.lapinas.98@gmail.com",
+        "results": null
+    }
 
    
 
-        //loops through the rows (123456789...)
-        for(let data = 0; data < information.data.length; data++){
 
-        //clean the rows with each iteration
+
+    // loop through sheets
+    for(let sheet = 0;sheet < information.length; sheet++) {
+
+        queue = []
+
+        //loop through numbers (123456...)
+        for(let data = 0; data < information[sheet].data.length; data++){
         queue[data] = []
 
-            //loops through collumns (ABCDEFG...)
-            for(let element = 0; element < information.data[data].length; element++) {
-                const variable = 'var ' + alphabet[element] + (data + 1)
+            //loop through letters (ABCDFG...)
+            for(let element = 0; element < information[sheet].data[data].length; element++) {
 
-                eval(variable + '= ' + 'handleScraping(information.data[data][element])' + ";")
-                
+                //create a variable with corresponding A1 notation and solve it immediatelly if possible.
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
+
+                //push the value of solved/unsolved variable unto a queue
                 queue[data].push(eval(alphabet[element] + (data + 1)))
             }
 
-            for(let data = 0; data < information.data.length; data++){
+        }
+       
 
-                //clean the rows with each iteration
-                queue[data] = []
+        // process the queue, now that all variables are available
+        for(let queueCount = 0; queueCount < queue.length; queueCount++) {
 
-                // //loops through collumns (ABCDEFG...)
-                // for(let element = 0;  element < information.data[data].length; element++) {
-                //     const variable = 'var ' + alphabet[element] + (data + 1)
-    
-                //     eval(variable + '= ' + 'handleTest(information.data[data][element])' + ";")
-                    
-                //     queue[data].push(eval(alphabet[element] + (data + 1)))
-                //     // console.log(alphabet[element] + (data + 1), eval(alphabet[element] + (data + 1)))
-                // }
-        
-                    //loops through collumns (ABCDEFG...)
-                    for(let element = information.data[data].length - 1; element > -1; element--) {
-                        const variable = 'var ' + alphabet[element] + (data + 1)
-        
-                        eval(variable + '= ' + 'handleScraping(information.data[data][element])' + ";")
-                        
-                        queue[data].push(eval(alphabet[element] + (data + 1)))
-                        console.log(alphabet[element] + (data + 1), eval(alphabet[element] + (data + 1)))
+            // console.log('processing')
+
+            queue[queueCount] = queue[queueCount].map(element => {
+                return process(element)
+            })
+           
+            
+            // console.log('processed')
+            // console.log(queue)
+        }
+
+        //check queue for null value, which means we had backwards rendering issues
+        for( let data = 0; data < queue.length; data++ ) {
+
+            if(queue[data].includes(null)) {
+
+                    //set the global variables to null to avoid errors.
+                    for(let sheet = 0;sheet < information.length; sheet++) {
+
+                        queue = []
+                
+                        for(let data = 0; data < information[sheet].data.length; data++){
+                        queue[data] = []
+                
+                            for(let element = 0; element < information[sheet].data[data].length; element++) {
+                
+                                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
+                
+                            }
+                
+                        }
+
                     }
 
+                let newQueue = []
+                
+                //rerender the variables back to front
 
+                //loop through numbers (12345...)
+                for(let data = 0; data < information[sheet].data.length; data++){
+                    newQueue[data] = []
+
+                    //loop through the letters back to front (ZYXWV...)
+                    for(let element = information[sheet].data[data].length - 1; element > -1; element--){
+
+                        const variable = 'var ' + alphabet[element] + (data + 1)
+        
+                        eval(variable + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
+
+                        
+                        newQueue[data].push(eval(alphabet[element] + (data + 1)))
+                        
+                    }
                 }
 
+                //we reverse the results to be in correct order
+                newQueue.reverse()
 
-    }
-    console.log(queue)
-    console.log(H1)
-    console.log(A1)
+                queue = newQueue
+
+            }
+
+        }
+
+
+
+        //return all the results to their corresponding places.
+        for( let data = 0; data < queue.length; data++ ) {
+
+            // console.log('returning results')
+           
+
+            for( let element = 0; element < queue[data].length; element++) {
+                information[sheet].data[data][element] = queue[data][element]
+            }
+
+            // console.log('results returned')
+
+        }
+
+        //set the global variables to null to avoid errors.
+        for(let sheet = 0;sheet < information.length; sheet++) {
+
+            queue = []
     
-
-
-    console.log(StringifyObject(information))   
-
-
-
-    function handleTest(argument) {
-
-        try{
+            for(let data = 0; data < information[sheet].data.length; data++){
+            queue[data] = []
     
-            let processedArgument = argument
+                for(let element = 0; element < information[sheet].data[data].length; element++) {
     
-       
-            if(typeof argument == 'string') {
+                    eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
     
-                if(argument.includes('=')){
-    
-                    processedArgument = argument.replace('=', '')
-                    processedArgument = eval(processedArgument)
-    
-                    
-                } 
+                }
     
             }
-            
-        return processedArgument
-    
-        }
-    
-        catch {
-            return argument 
-        }
-    
-        
+
+     }
+
     }
-    
+
+    // submission["results"] = processedData["sheets"]
+    console.log(StringifyObject(processedData))   
+
+    // const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(submission),
+    //   });
+
+
+    // const result = await response.json()
+    // console.log(result)
+
+
+
+    //function which solves the variable if it can.
      function handleScraping(argument) {
 
         try{
@@ -118,24 +181,63 @@ async function ApiCall() {
             if(typeof argument == 'string') {
     
                 if(argument.includes('=')){
+
+                    if(argument.includes("MULTIPLY") || argument.includes("SUM") || argument.includes("DIVIDE") || argument.includes("GT") || argument.includes("EQ") || argument.includes("NOT") || argument.includes("AND") || argument.includes("OR") || argument.includes("IF") || argument.includes("CONCAT")) {
+                        return argument
+                    } else {
+
+                        processedArgument = argument.replace('=', '')
     
-                    processedArgument = argument.replace('=', '')
-    
-                    processedArgument = eval(processedArgument)
+                        processedArgument = eval(processedArgument)
+
+                    }
     
                 } 
     
             }
             
         return processedArgument
-    
+
         }
-    
+
         catch {
+
             return argument 
+
         }
+
+    }
+
+    function process(argument) {
+
+        try{
     
-        
+            let processedArgument = argument
+    
+       
+            if(typeof argument == 'string') {
+    
+                if(argument.includes('=')){
+
+
+                    processedArgument = argument.replace('=', '')
+    
+                    processedArgument = eval(processedArgument)
+
+                } 
+    
+            }
+            
+        return processedArgument
+
+        }
+
+        catch {
+
+            return argument 
+
+        }
+
     }
 
 
@@ -191,28 +293,5 @@ async function ApiCall() {
         }
 
     
-    }
+}
 ApiCall();
-
- 
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -12,6 +12,7 @@ async function ApiCall() {
             JSON.stringify(arg, null, 2)
         )
     }
+    // console.log(StringifyObject(processedData))
     let information  = processedData.sheets
 
     // console.log(StringifyObject(processedData))
@@ -21,7 +22,6 @@ async function ApiCall() {
     let queue = []
 
     let submission  = {
-        "submissionUrl" : "https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0",
         "email": "justas.lapinas.98@gmail.com",
         "results": null
     }
@@ -52,13 +52,13 @@ async function ApiCall() {
         }
        
 
-        //process the queue, now that all variables are available
+        // process the queue, now that all variables are available
         for(let queueCount = 0; queueCount < queue.length; queueCount++) {
 
             // console.log('processing')
 
             queue[queueCount] = queue[queueCount].map(element => {
-                return handleScraping(element)
+                return process(element)
             })
            
             
@@ -155,7 +155,20 @@ async function ApiCall() {
     }
 
     submission["results"] = processedData["sheets"]
-     console.log(StringifyObject(submission))   
+    console.log(StringifyObject(processedData))   
+
+    const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submission),
+      });
+
+
+    const result = await response.json()
+    console.log(result)
+
 
 
     //function which solves the variable if it can.
@@ -169,24 +182,63 @@ async function ApiCall() {
             if(typeof argument == 'string') {
     
                 if(argument.includes('=')){
+
+                    if(argument.includes("MULTIPLY") || argument.includes("SUM") || argument.includes("DIVIDE") || argument.includes("GT") || argument.includes("EQ") || argument.includes("NOT") || argument.includes("AND") || argument.includes("OR") || argument.includes("IF") || argument.includes("CONCAT")) {
+                        return argument
+                    } else {
+
+                        processedArgument = argument.replace('=', '')
     
-                    processedArgument = argument.replace('=', '')
-    
-                    processedArgument = eval(processedArgument)
+                        processedArgument = eval(processedArgument)
+
+                    }
     
                 } 
     
             }
             
         return processedArgument
-    
+
         }
-    
+
         catch {
+
             return argument 
+
         }
+
+    }
+
+    function process(argument) {
+
+        try{
     
-        
+            let processedArgument = argument
+    
+       
+            if(typeof argument == 'string') {
+    
+                if(argument.includes('=')){
+
+
+                    processedArgument = argument.replace('=', '')
+    
+                    processedArgument = eval(processedArgument)
+
+                } 
+    
+            }
+            
+        return processedArgument
+
+        }
+
+        catch {
+
+            return argument 
+
+        }
+
     }
 
 

@@ -1,6 +1,6 @@
 {
-  "submissionUrl": "https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0",
-  "sheets": [
+  "email": "justas.lapinas.98@gmail.com",
+  "results": [
     {
       "id": "sheet-0",
       "data": []
@@ -21,9 +21,9 @@
       "data": [
         [
           5,
-          "=A1",
+          5,
           22,
-          "=C1"
+          22
         ]
       ]
     },
@@ -33,7 +33,7 @@
         [
           22,
           212212,
-          "=SUM(A1, B1)"
+          212234
         ]
       ]
     },
@@ -43,7 +43,7 @@
         [
           221212,
           22,
-          "=SUM(A1, B1, D1)",
+          221234,
           212
         ]
       ]
@@ -54,7 +54,7 @@
         [
           22,
           212212,
-          "=SUM(A1, 6, B1)"
+          212240
         ]
       ]
     },
@@ -62,7 +62,7 @@
       "id": "sheet-6",
       "data": [
         [
-          "=MULTIPLY(B1, C1)",
+          0,
           22,
           212
         ]
@@ -75,7 +75,7 @@
           5,
           22,
           33,
-          "=MULTIPLY(A2, B1, C2)"
+          0
         ],
         [
           5,
@@ -91,7 +91,7 @@
         [
           6,
           4,
-          "=DIVIDE(A1, B1)"
+          1.5
         ]
       ]
     },
@@ -101,7 +101,7 @@
         [
           1,
           3,
-          "=DIVIDE(A1, B1)"
+          0.3333333333333333
         ]
       ]
     },
@@ -111,7 +111,7 @@
         [
           1,
           3,
-          "=GT(A1, B1)"
+          false
         ]
       ]
     },
@@ -121,7 +121,7 @@
         [
           10.75,
           10.75,
-          "=EQ(A1, B1)"
+          true
         ]
       ]
     },
@@ -131,12 +131,12 @@
         [
           10.75,
           10.75,
-          "=EQ(A1, B2)"
+          false
         ],
         [
           10.74,
           10.74,
-          "=EQ(A2, B2)"
+          true
         ]
       ]
     },
@@ -149,7 +149,7 @@
           true,
           false,
           true,
-          "=NOT(D1)"
+          true
         ],
         [
           false,
@@ -163,7 +163,7 @@
           true,
           true,
           true,
-          "=NOT(E2)",
+          false,
           true,
           false
         ]
@@ -176,7 +176,7 @@
           true,
           true,
           false,
-          "=AND(A1, B1, C1)"
+          false
         ]
       ]
     },
@@ -186,17 +186,17 @@
         [
           true,
           false,
-          "=AND(A1, B1)"
+          false
         ],
         [
           true,
           true,
-          "=AND(A2, B2)"
+          true
         ],
         [
           true,
           1,
-          "=AND(A3, B3)"
+          "#ERROR: type does not match"
         ]
       ]
     },
@@ -206,17 +206,17 @@
         [
           true,
           false,
-          "=OR(A1, B1)"
+          true
         ],
         [
           false,
           false,
-          "=OR(A2, B2)"
+          false
         ],
         [
           true,
           1,
-          "=OR(A3, B3)"
+          "#ERROR: type does not match"
         ]
       ]
     },
@@ -227,7 +227,7 @@
           false,
           false,
           true,
-          "=OR(A1, B1, C1)"
+          true
         ]
       ]
     },
@@ -237,7 +237,7 @@
         [
           21221,
           21212,
-          "=IF(GT(A1, B1), A1, B1)"
+          21221
         ]
       ]
     },
@@ -245,7 +245,7 @@
       "id": "sheet-19",
       "data": [
         [
-          "=CONCAT(\"Hello\", \", \", \"World!\")"
+          "Hello, World!"
         ]
       ]
     },
@@ -270,7 +270,7 @@
           "AU",
           "AW",
           "AZ",
-          "=CONCAT(I1, \" is \", I2)"
+          "AN is null"
         ],
         [
           "Names",
@@ -299,13 +299,13 @@
       "data": [
         [
           "First",
-          "=A1",
-          "=B1",
-          "=C1",
-          "=D1",
-          "=E1",
-          "=F1",
-          "=G1"
+          "First",
+          "First",
+          "First",
+          "First",
+          "First",
+          "First",
+          "First"
         ]
       ]
     },
@@ -316,22 +316,22 @@
           "First"
         ],
         [
-          "=A1"
+          "First"
         ],
         [
-          "=A2"
+          "First"
         ],
         [
-          "=A3"
+          "First"
         ],
         [
-          "=A4"
+          "First"
         ],
         [
-          "=A5"
+          "First"
         ],
         [
-          "=A6"
+          "First"
         ]
       ]
     },
@@ -339,13 +339,13 @@
       "id": "sheet-23",
       "data": [
         [
-          "=B1",
-          "=C1",
-          "=D1",
-          "=E1",
-          "=F1",
-          "=G1",
-          "=H1",
+          "Last",
+          "Last",
+          "Last",
+          "Last",
+          "Last",
+          "Last",
+          "Last",
           "Last"
         ]
       ]
