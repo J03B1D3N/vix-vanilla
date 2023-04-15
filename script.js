@@ -1,5 +1,3 @@
-const root = document.getElementById('root')
-
 async function ApiCall() {
 
     const apiCall = await fetch('https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/sheets')
