@@ -1,4 +1,66 @@
-async function ApiCall() {
+async function spreadsheetProcessor() {
+
+
+    const StringifyObject = (arg) => {
+        return (
+            JSON.stringify(arg, null, 2)
+        )
+    }
+
+    const sheetBundle = await fetchSheets()
+
+    var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
+
+
+    //initialise queue
+    let queue = []
+
+    for(let sheet = 0;sheet < sheetBundle.length; sheet++) {
+
+        //clean the queue with each iteration 
+        queue = []
+  
+        //loop through numbers (123456...)
+        for(let data = 0; data < sheetBundle[sheet].data.length; data++){
+        queue[data] = []
+  
+            //loop through letters (ABCDFG...)
+            for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
+  
+                //create a variable with corresponding A1 notation and solve it immediatelly if possible.
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+  
+                //push the value of solved/unsolved variable unto a queue
+                queue[data].push(eval(alphabet[element] + (data + 1)))
+
+                // console.log(eval(alphabet[element] + (data + 1)))
+            }
+        }
+        
+        queue = handleProcessing(queue)
+
+        returnArguments(sheetBundle[sheet], queue)
+
+    }   
+    console.log(StringifyObject(sheetBundle))
+
+
+function returnArguments(sheetBundle, queue) {
+
+    //return all the results to their corresponding places.
+    for( let data = 0; data < queue.length; data++ ) {
+
+       // console.log('returning results')
+      
+
+       for( let element = 0; element < queue[data].length; element++) {
+           sheetBundle.data[data][element] = queue[data][element]
+       }
+       // console.log('results returned')
+   }
+}
+
+async function fetchSheets() {
 
     const apiCall = await fetch('https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/sheets')
 
@@ -15,163 +77,127 @@ async function ApiCall() {
 
     // console.log(StringifyObject(processedData))
 
-    var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
-    let queue = []
+    // let queue = []
 
-    let submission  = {
-        "email": "justas.lapinas.98@gmail.com",
-        "results": null
-    }
-
+    // let submission  = {
+    //     "email": "justas.lapinas.98@gmail.com",
+    //     "results": null
+    // }
+    return information
+}
    
 
+  
 
 
-    // loop through sheets
-    for(let sheet = 0;sheet < information.length; sheet++) {
+function handleProcessing(queue) {
 
-        queue = []
-
-        //loop through numbers (123456...)
-        for(let data = 0; data < information[sheet].data.length; data++){
-        queue[data] = []
-
-            //loop through letters (ABCDFG...)
-            for(let element = 0; element < information[sheet].data[data].length; element++) {
-
-                //create a variable with corresponding A1 notation and solve it immediatelly if possible.
-                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
-
-                //push the value of solved/unsolved variable unto a queue
-                queue[data].push(eval(alphabet[element] + (data + 1)))
-            }
-
-        }
-       
 
         // process the queue, now that all variables are available
         for(let queueCount = 0; queueCount < queue.length; queueCount++) {
 
-            // console.log('processing')
+            console.log('processing')
 
             queue[queueCount] = queue[queueCount].map(element => {
-                return process(element)
+                return processTheArguments(element)
             })
            
             
-            // console.log('processed')
-            // console.log(queue)
+            console.log('processed')
+            console.log(queue)
         }
 
-        //check queue for null value, which means we had backwards rendering issues
-        for( let data = 0; data < queue.length; data++ ) {
+        return queue
 
-            if(queue[data].includes(null)) {
+}   
+       
 
-                    //set the global variables to null to avoid errors.
-                    for(let sheet = 0;sheet < information.length; sheet++) {
+function checkForNull(queue) {
 
-                        queue = []
-                
-                        for(let data = 0; data < information[sheet].data.length; data++){
-                        queue[data] = []
-                
-                            for(let element = 0; element < information[sheet].data[data].length; element++) {
-                
-                                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
-                
-                            }
-                
-                        }
+    for( let data = 0; data < queue.length; data++ ) {
 
-                    }
+        if(queue[data].includes(null)) {
 
-                let newQueue = []
-                
-                //rerender the variables back to front
-
-                //loop through numbers (12345...)
-                for(let data = 0; data < information[sheet].data.length; data++){
-                    newQueue[data] = []
-
-                    //loop through the letters back to front (ZYXWV...)
-                    for(let element = information[sheet].data[data].length - 1; element > -1; element--){
-
-                        const variable = 'var ' + alphabet[element] + (data + 1)
-        
-                        eval(variable + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
-
-                        
-                        newQueue[data].push(eval(alphabet[element] + (data + 1)))
-                        
-                    }
-                }
-
-                //we reverse the results to be in correct order
-                newQueue.reverse()
-
-                queue = newQueue
-
-            }
-
+            return true
         }
-
-
-
-        //return all the results to their corresponding places.
-        for( let data = 0; data < queue.length; data++ ) {
-
-            // console.log('returning results')
-           
-
-            for( let element = 0; element < queue[data].length; element++) {
-                information[sheet].data[data][element] = queue[data][element]
-            }
-
-            // console.log('results returned')
-
-        }
-
-        //set the global variables to null to avoid errors.
-        for(let sheet = 0;sheet < information.length; sheet++) {
-
-            queue = []
-    
-            for(let data = 0; data < information[sheet].data.length; data++){
-            queue[data] = []
-    
-                for(let element = 0; element < information[sheet].data[data].length; element++) {
-    
-                    eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
-    
-                }
-    
-            }
-
-     }
-
     }
+}
 
-    // submission["results"] = processedData["sheets"]
-    console.log(StringifyObject(processedData))   
+function resetGlobalVariables(sheetBundle) {
 
-    // const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(submission),
-    //   });
+     //set the global variables to null to avoid errors.
+     for(let sheet = 0;sheet < sheetBundle.length; sheet++) {
+
+        queue = []
+
+        for(let data = 0; data < sheetBundle[sheet].data.length; data++){
+        queue[data] = []
+
+            for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
+
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
+
+            }
+        }
+    }
+}
+
+function scrapeTheArgumentsBackwards(sheetBundle) {
+
+    let queue = []
+                
+    //loop through numbers (12345...)
+    for(let data = 0; data < sheetBundle[sheet].data.length; data++){
+        queue[data] = []
+
+        //loop through the letters back to front (ZYXWV...)
+        for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
+
+            const variable = 'var ' + alphabet[element] + (data + 1)
+
+            eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+
+            
+            queue[data].push(eval(alphabet[element] + (data + 1)))
+            
+        }
+    }
+}
 
 
-    // const result = await response.json()
-    // console.log(result)
+
+function returnProcessedInfoToTheApi() {
+
+  // submission["results"] = processedData["sheets"]
+  console.log(StringifyObject(processedData))   
+
+  // const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(submission),
+  //   });
+
+
+  // const result = await response.json()
+  // console.log(result)
+
+}
+              
+
+
+
+       
+
+
+  
 
 
 
     //function which solves the variable if it can.
-     function handleScraping(argument) {
+     function scrapeTheArguments(argument) {
 
         try{
     
@@ -181,7 +207,6 @@ async function ApiCall() {
             if(typeof argument == 'string') {
     
                 if(argument.includes('=')){
-
                     if(argument.includes("MULTIPLY") || argument.includes("SUM") || argument.includes("DIVIDE") || argument.includes("GT") || argument.includes("EQ") || argument.includes("NOT") || argument.includes("AND") || argument.includes("OR") || argument.includes("IF") || argument.includes("CONCAT")) {
                         return argument
                     } else {
@@ -200,15 +225,15 @@ async function ApiCall() {
 
         }
 
-        catch {
-
+        catch(error) {
+            console.log("error in scraping", error)
             return argument 
 
         }
 
     }
 
-    function process(argument) {
+    function processTheArguments(argument) {
 
         try{
     
@@ -218,7 +243,6 @@ async function ApiCall() {
             if(typeof argument == 'string') {
     
                 if(argument.includes('=')){
-
 
                     processedArgument = argument.replace('=', '')
     
@@ -233,7 +257,7 @@ async function ApiCall() {
         }
 
         catch {
-
+            console.log("error in processing")
             return argument 
 
         }
@@ -291,7 +315,6 @@ async function ApiCall() {
                 return acc.concat(cur)
             })
         }
-
-    
 }
-ApiCall();
+
+spreadsheetProcessor()
