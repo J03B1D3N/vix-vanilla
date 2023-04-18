@@ -1,161 +1,119 @@
-async function ApiCall() {
+async function spreadsheetProcessor() {
 
-    const apiCall = await fetch('https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/sheets')
-
-    let processedData = await apiCall.json()
-
-    //prepare the sheets for scraping
-    let information  = processedData.sheets
-
-    //initialise alphabet 
-    var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
+    const sheetBundle = await fetchSheets()
     
+    //initialise alphabet
+    var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
-    // loop through sheets
-    for(let sheet = 0;sheet < information.length; sheet++) {
+    //initialise queue
+    let queue = []
 
-        //initialise the queue
+    //iterate through the sheets
+    for(let sheet = 0;sheet < sheetBundle.length; sheet++) {
+
+        //clean the queue with each iteration 
         queue = []
-
+  
         //loop through numbers (123456...)
-        for(let data = 0; data < information[sheet].data.length; data++){
+        for(let data = 0; data < sheetBundle[sheet].data.length; data++){
         queue[data] = []
-
+  
             //loop through letters (ABCDFG...)
-            for(let element = 0; element < information[sheet].data[data].length; element++) {
-
+            for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
+  
                 //create a variable with corresponding A1 notation and solve it immediatelly if possible.
-                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
-
-                //push the value of solved/unsolved variable into a queue
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+  
+                //push the value of solved/unsolved variable unto a queue
                 queue[data].push(eval(alphabet[element] + (data + 1)))
             }
-
-        }
-       
-
-        // process the queue
-        for(let queueCount = 0; queueCount < queue.length; queueCount++) {
-
-            queue[queueCount] = queue[queueCount].map(element => {
-                return process(element)
-            })
-           
         }
 
-        //check queue for null value, which means we had backwards rendering issues
-        for( let data = 0; data < queue.length; data++ ) {
+        //check for null value, which means that we weren't able to render all the variables front to back
+        //therefore we need to render them back to front
+        if(checkForNull(queue)){
 
-            if(queue[data].includes(null)) {
-
-                    //set the global variables to null to avoid errors.
-                    for(let sheet = 0;sheet < information.length; sheet++) {
+            //clean queue
+            queue = []
                 
-                        for(let data = 0; data < information[sheet].data.length; data++){
-                
-                            for(let element = 0; element < information[sheet].data[data].length; element++) {
-                
-                                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
-                
-                            }
-                
-                        }
-
-                    }
-
-                let newQueue = []
-                
-                //rerender the variables back to front
-
-                //loop through numbers (12345...)
-                for(let data = 0; data < information[sheet].data.length; data++){
-                    newQueue[data] = []
-
-                    //loop through the letters back to front (ZYXWV...)
-                    for(let element = information[sheet].data[data].length - 1; element > -1; element--){
-
-                        const variable = 'var ' + alphabet[element] + (data + 1)
+            //loop through numbers (12345...)
+            for(let data = 0; data < sheetBundle[sheet].data.length; data++){
+                queue[data] = []
         
-                        eval(variable + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
+                //loop through the letters back to front (ZYXWV...)
+                for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
 
-                        
-                        newQueue[data].push(eval(alphabet[element] + (data + 1)))
-                        
-                    }
-
+                    const variable = alphabet[element] + (data + 1)
+                
+                    eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+        
+                    queue[data].push(eval(alphabet[element] + (data + 1)))
                 }
 
-                //we reverse the results to be in correct order
-                newQueue.reverse()
-
-                queue = newQueue
+                //reverse the queue so the variables are in correct order
+                queue[data].reverse()
 
             }
-
         }
+        
+        //process(solve) the variables
+        queue = handleProcessing(queue)
 
+        //return solved arguments into their place
+        returnArguments(sheetBundle[sheet], queue)
 
-
-        //return all the results to their corresponding places.
-        for( let data = 0; data < queue.length; data++ ) {           
-
-            for( let element = 0; element < queue[data].length; element++) {
-                information[sheet].data[data][element] = queue[data][element]
-            }
-
-        }
-
-        //set the global variables to null to avoid errors.
-        for(let sheet = 0;sheet < information.length; sheet++) {
+        //reset the variables to null in order to avoid errors
+        for(let sheet = 0;sheet < sheetBundle.length; sheet++) {
     
-            for(let data = 0; data < information[sheet].data.length; data++){
+            for(let data = 0; data < sheetBundle[sheet].data.length; data++){
     
-                for(let element = 0; element < information[sheet].data[data].length; element++) {
+                for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
     
                     eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
     
                 }
-    
             }
+        }
+    } 
 
-     }
+    //modify the submission and sumbit it to the API
+    returnProcessedInfoToTheApi()
+    // end of app logic
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
+
+
+
+    //below are the functions used in the app logic:
+
+
+
+    //the API call that gets us the sheets
+    async function fetchSheets() {
+        
+        const apiCall = await fetch('https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/sheets')
+        
+        let processedData = await apiCall.json()
+        
+        let information  = processedData.sheets
+        
+        return information
     }
-    
-    // //not sure if this is nescesarry for the submition. Going to leave it here just in case.
-    // let submission  = {
-    //     "email": "justas.lapinas.98@gmail.com",
-    //     "results": null
-    // }
 
-    // submission["results"] = processedData["sheets"]
-
-    // const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(submission),
-    //   });
-
-
-    // const result = await response.json()
-    // console.log(result)
-
-
-
-    //function which scrapes the info and solves the variable if it can.
-     function handleScraping(argument) {
+    //scrapes the arguments, solves them if it can, skips solving functions, places all arguments into the queue
+    function scrapeTheArguments(argument) {
 
         try{
     
             let processedArgument = argument
     
-       
             if(typeof argument == 'string') {
     
                 if(argument.includes('=')){
-
-                    //skips the functions because often cant solve them correctly without all variables being present.
                     if(argument.includes("MULTIPLY") || argument.includes("SUM") || argument.includes("DIVIDE") || argument.includes("GT") || argument.includes("EQ") || argument.includes("NOT") || argument.includes("AND") || argument.includes("OR") || argument.includes("IF") || argument.includes("CONCAT")) {
                         return argument
                     } else {
@@ -165,26 +123,35 @@ async function ApiCall() {
                         processedArgument = eval(processedArgument)
 
                     }
-    
                 } 
-    
             }
             
         return processedArgument
 
         }
 
-        catch {
-
+        catch(error) {
             return argument 
+        }
+    }
+    
 
+    //itterates the processing function over the queue elements
+    function handleProcessing(queue) {
+
+        for(let queueCount = 0; queueCount < queue.length; queueCount++) {
+
+            queue[queueCount] = queue[queueCount].map(element => {
+                    return processTheArguments(element)
+            })
         }
 
-    }
+        return queue
 
-    //practically same function like handleScraping(), but doesn't skip the functions because all of the variables have been
-    //initialised and we can finally solve them.
-    function process(argument) {
+    }   
+
+    //processes all the arguments if it can
+    function processTheArguments(argument) {
 
         try{
     
@@ -194,7 +161,6 @@ async function ApiCall() {
             if(typeof argument == 'string') {
     
                 if(argument.includes('=')){
-
 
                     processedArgument = argument.replace('=', '')
     
@@ -213,79 +179,138 @@ async function ApiCall() {
             return argument 
 
         }
+    }
+    
+    //returns all the results to their corresponding places.
+    function returnArguments(sheetBundle, queue) {
 
+       
+        for( let data = 0; data < queue.length; data++ ) {
+
+            for( let element = 0; element < queue[data].length; element++) {
+                sheetBundle.data[data][element] = queue[data][element]
+            }
+        }
     }
 
+    //checks for null in queue[n]
+    function checkForNull(queue) {
 
-        //function for multiplying any amount of arguments
-        function MULTIPLY(...args) {
+        for( let data = 0; data < queue.length; data++ ) {
+
+            if(queue[data].includes(null)) {
+
+                return true
+            } else return false
+        }
+    }
+
+    //the POST request that sends the processed data to the API and logs the response
+    async function returnProcessedInfoToTheApi() {
+
+        let submission  = {
+            "email": "justas.lapinas.98@gmail.com",
+            "results": sheetBundle
+
+        }
+
+        const response = await fetch("https://cors-anywhere.herokuapp.com/https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(submission),
+            });
+
+        const result = await response.json()
+        console.log(result)
+    }
+              
+    //checks if arguments is string
+    function isNotString(value){
+        return'string' !== typeof value
+    }
+    
+    //checks if argument is not boolean
+    function isNotBoolean(value){
+        return 'boolean' !== typeof value;
+    } 
+
+    //checks if all arguments are numbers, then multiplies them
+    function MULTIPLY(...args) {
+        if(!args.some(isNaN)){
             return args.reduce(function (acc, cur) {
                 return acc * cur
             })
-        }
+        } else return '#ERROR: type does not match'
+    }
 
-        //function for adding any amount of arguments
-        function SUM(...args) {
+    //checks if all arguments are numbers, then adds them together
+    function SUM(...args) {
+        if(!args.some(isNaN)){
             return args.reduce(function (acc, cur) {
                 return acc + cur
             })
-        }
+        } else return '#ERROR: type does not match'
+    }
 
-        //function for dividing any amount of arguments
-        function DIVIDE(...args) {
+    //checks if all arguments are numbers, then divides them
+    function DIVIDE(...args) {
+        if(!args.some(isNaN)){
             return args.reduce(function (acc, cur) {
                 return acc / cur
             })
-        }
+        } else return '#ERROR: type does not match'
+    }
 
-        //takes two arguments, evaluates them and returns true if first one is bigger, false if not.
-        function GT(a,b) {
-            return (a > b ? true : false)
-        }
+    //checks if all arguments are numbers, then checks if first argument is greater than the other them
+    function GT(a,b) {
+        if(isNaN(a) || isNaN(b)){
+            return '#ERROR: type does not match'
+        } else return (a > b ? true : false)
+    }
 
-        //takes two arguments, evaluates them, returns true if they're eual, false if not.
-        function EQ(a,b) {
+    //checks if all arguments are of the same type, then equates their value them
+    function EQ(a,b) {
+        if(typeof a === typeof b){
             return (a == b ? true : false)
-        }
+        } else '#ERROR: type does not match'
+    }
 
-        //reverses argument
-        function NOT(a) {
+    //checks if argument is a boolean, then reverses it
+    function NOT(a) {
+        if(typeof a == "boolean"){
             return !a
-        }
+        } else return '#ERROR: type does not match'
+    }
 
-        //checks if all of arguments are true.
-        function AND(...args) {
-            
-        const includesNotABoolean = (element) => typeof element === 'string' || typeof element === 'number'
-            
-            return (args.some(includesNotABoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
-                return acc && cur
-            }))
-           
-        }
+    //checks if all arguments are booleans, then runs the AND operator on them
+    function AND(...args) {
+        return (args.some(isNotBoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
+            return acc && cur
+        }))
+    }
 
-        //checks if at least one of the arguments is true
-        function OR(...args) {
-            const includesNotABoolean = (element) => typeof element === 'string' || typeof element === 'number'
-            return (args.some(includesNotABoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
-                return acc || cur
-            }))
-        }
+    //checks if all arguments are booleans, then runs the OR operator on them
+    function OR(...args) {
+        return (args.some(isNotBoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
+            return acc || cur
+        }))
+    }
 
-        //if condition is true returns first argument, if not returns second
-        function IF(condition, arg1, arg2) {
-            if(condition) {
-                return arg1
-            } else return arg2
-        }
+    //IF statement. Returns error if condition is not a truthy or a falsy
+    function IF(condition, arg1, arg2) {
+        if(condition) {
+            return arg1
+        } else if(!condition) return arg2
+        else return '#ERROR: type does not match'
+    }
 
-        //concats any amount of strings
-        function CONCAT(...args) {
-            return args.reduce(function (acc, cur) {
-                return acc.concat(cur)
-            })
-        }
-
-    
+    //checks if all arguments are strings, then concacts them
+    function CONCAT(...args) {
+        return (args.some(isNotString) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
+            return acc.concat(cur)
+        }))
+    }
 }
-ApiCall();
+spreadsheetProcessor();
