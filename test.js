@@ -1,32 +1,14 @@
 async function spreadsheetProcessor() {
 
+    const sheetBundle = await fetchSheets()
+
     const StringifyObject = (arg) => {
         return (
             JSON.stringify(arg, null, 2)
         )
     }
-
-    const sheetBundle = await fetchSheets()
-    console.log(sheetBundle)
-    sheetBundle[24] = {
-        "id": "sheet-24",
-        "data": [
-          [
-            10,
-            20,
-            "30",
-            "=SUM(A1, B1, H1)",
-            "=F1",
-            "=G1",
-            "=H1",
-            "Last"
-          ]
-        ]
-      }
+    
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
-
-
-
 
     //initialise queue
     let queue = []
@@ -93,9 +75,9 @@ async function spreadsheetProcessor() {
             }
         }
     }   
-    // returnProcessedInfoToTheApi()
+    returnProcessedInfoToTheApi()
 
-    console.log(StringifyObject(sheetBundle))
+    // console.log(StringifyObject(sheetBundle))
 
 
 function returnArguments(sheetBundle, queue) {
@@ -192,6 +174,7 @@ async function returnProcessedInfoToTheApi() {
         "results": sheetBundle
 
     }
+    console.log(StringifyObject(sheetBundle))
 
   const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
       method: "POST",
@@ -287,13 +270,22 @@ async function returnProcessedInfoToTheApi() {
 
 
 
+        function isString(value){
+            return'string' === typeof value
+        }
+        
+        function isNotBoolean(value){
+            return 'boolean' !== typeof value;
+        } 
+
+
+
         function MULTIPLY(...args) {
             if(!args.some(isNaN)){
                 return args.reduce(function (acc, cur) {
                     return acc * cur
                 })
             } else return '#ERROR: type does not match'
-            
         }
         function SUM(...args) {
             if(!args.some(isNaN)){
@@ -309,7 +301,6 @@ async function returnProcessedInfoToTheApi() {
                     return acc / cur
                 })
             } else return '#ERROR: type does not match'
-           
         }
         function GT(a,b) {
             if(isNaN(a) || isNaN(b)){
@@ -318,9 +309,9 @@ async function returnProcessedInfoToTheApi() {
            
         }
         function EQ(a,b) {
-            if(isNaN(a) || isNaN(b)){
-                return '#ERROR: type does not match'
-            } else return (a == b ? true : false)
+            if(typeof a === typeof b){
+                return (a == b ? true : false)
+            } else '#ERROR: type does not match'
         }
         function NOT(a) {
             if(typeof a == "boolean"){
@@ -328,20 +319,14 @@ async function returnProcessedInfoToTheApi() {
             } else return '#ERROR: type does not match'
         }
         function AND(...args) {
-            
-            const isBoolean = val => 'boolean' === typeof val;
-            
-            return (args.some(isBoolean) ? args.reduce(function (acc, cur) {
+            return (args.some(isNotBoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
                 return acc && cur
-            }) : '#ERROR: type does not match')
-           
+            }))
         }
         function OR(...args) {
-            const isBoolean = val => 'boolean' === typeof val;
-            return (args.some(isBoolean) ? args.reduce(function (acc, cur) {
+            return (args.some(isNotBoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
                 return acc || cur
-            }) : '#ERROR: type does not match')
-
+            }))
         }
         function IF(condition, arg1, arg2) {
             if(condition) {
@@ -350,7 +335,6 @@ async function returnProcessedInfoToTheApi() {
             else return '#ERROR: type does not match'
         }
         function CONCAT(...args) {
-            const isString = val => 'string' === typeof val;
             return (args.some(isString) ? args.reduce(function (acc, cur) {
                 return acc.concat(cur)
             }) : '#ERROR: type does not match')
