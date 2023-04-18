@@ -44,8 +44,8 @@ async function spreadsheetProcessor() {
       
       returnArguments(dummy, queue)
       
+      console.log(A1, B1, C1, D1)
     }
-    console.log(A1, B1, C1, D1)
   // console.log(StringifyObject(sheetBundle))
 
 

@@ -1,6 +1,5 @@
 async function spreadsheetProcessor() {
 
-
     const StringifyObject = (arg) => {
         return (
             JSON.stringify(arg, null, 2)
@@ -8,8 +7,25 @@ async function spreadsheetProcessor() {
     }
 
     const sheetBundle = await fetchSheets()
-
+    console.log(sheetBundle)
+    sheetBundle[24] = {
+        "id": "sheet-24",
+        "data": [
+          [
+            10,
+            20,
+            "30",
+            "=SUM(A1, B1, H1)",
+            "=F1",
+            "=G1",
+            "=H1",
+            "Last"
+          ]
+        ]
+      }
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
+
+
 
 
     //initialise queue
@@ -36,12 +52,49 @@ async function spreadsheetProcessor() {
                 // console.log(eval(alphabet[element] + (data + 1)))
             }
         }
+
+        if(checkForNull(queue)){
+            console.log('contains null')
+            queue = []
+                
+            //loop through numbers (12345...)
+            for(let data = 0; data < sheetBundle[sheet].data.length; data++){
+                queue[data] = []
+        
+                //loop through the letters back to front (ZYXWV...)
+                for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
+        
+                    const variable = 'var ' + alphabet[element] + (data + 1)
+        
+                    eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+        
+                    queue[data].push(eval(alphabet[element] + (data + 1)))
+                }
+
+                queue[data].reverse()
+
+            }
+        }
         
         queue = handleProcessing(queue)
 
         returnArguments(sheetBundle[sheet], queue)
 
+        //reset the variables to avoid errors
+        for(let sheet = 0;sheet < sheetBundle.length; sheet++) {
+    
+            for(let data = 0; data < sheetBundle[sheet].data.length; data++){
+    
+                for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
+    
+                    eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
+    
+                }
+            }
+        }
     }   
+    // returnProcessedInfoToTheApi()
+
     console.log(StringifyObject(sheetBundle))
 
 
@@ -76,14 +129,6 @@ async function fetchSheets() {
     let information  = processedData.sheets
 
     // console.log(StringifyObject(processedData))
-
-
-    // let queue = []
-
-    // let submission  = {
-    //     "email": "justas.lapinas.98@gmail.com",
-    //     "results": null
-    // }
     return information
 }
    
@@ -97,15 +142,10 @@ function handleProcessing(queue) {
         // process the queue, now that all variables are available
         for(let queueCount = 0; queueCount < queue.length; queueCount++) {
 
-            console.log('processing')
-
             queue[queueCount] = queue[queueCount].map(element => {
                 return processTheArguments(element)
             })
-           
-            
-            console.log('processed')
-            console.log(queue)
+
         }
 
         return queue
@@ -120,69 +160,50 @@ function checkForNull(queue) {
         if(queue[data].includes(null)) {
 
             return true
-        }
+        } else return false
     }
 }
 
-function resetGlobalVariables(sheetBundle) {
+function resetVariables(sheetBundle) {
 
-     //set the global variables to null to avoid errors.
-     for(let sheet = 0;sheet < sheetBundle.length; sheet++) {
+    for(let data = 0; data < sheetBundle.data.length; data++){
+    
+        for(let element = 0; element < sheetBundle.data[data].length; element++) {
 
-        queue = []
+            let variable = alphabet[element] + (data + 1)
 
-        for(let data = 0; data < sheetBundle[sheet].data.length; data++){
-        queue[data] = []
+            eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
 
-            for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
+            return eval(variable)
 
-                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'null' +";")
-
-            }
-        }
-    }
-}
-
-function scrapeTheArgumentsBackwards(sheetBundle) {
-
-    let queue = []
-                
-    //loop through numbers (12345...)
-    for(let data = 0; data < sheetBundle[sheet].data.length; data++){
-        queue[data] = []
-
-        //loop through the letters back to front (ZYXWV...)
-        for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
-
-            const variable = 'var ' + alphabet[element] + (data + 1)
-
-            eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
-
-            
-            queue[data].push(eval(alphabet[element] + (data + 1)))
-            
         }
     }
 }
 
 
 
-function returnProcessedInfoToTheApi() {
-
-  // submission["results"] = processedData["sheets"]
-  console.log(StringifyObject(processedData))   
-
-  // const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(submission),
-  //   });
 
 
-  // const result = await response.json()
-  // console.log(result)
+async function returnProcessedInfoToTheApi() {
+
+
+    let submission  = {
+        "email": "justas.lapinas.98@gmail.com",
+        "results": sheetBundle
+
+    }
+
+  const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submission),
+    });
+
+
+  const result = await response.json()
+  console.log(result)
 
 }
               
@@ -267,53 +288,72 @@ function returnProcessedInfoToTheApi() {
 
 
         function MULTIPLY(...args) {
-            return args.reduce(function (acc, cur) {
-                return acc * cur
-            })
+            if(!args.some(isNaN)){
+                return args.reduce(function (acc, cur) {
+                    return acc * cur
+                })
+            } else return '#ERROR: type does not match'
+            
         }
         function SUM(...args) {
-            return args.reduce(function (acc, cur) {
-                return acc + cur
-            })
+            if(!args.some(isNaN)){
+                return args.reduce(function (acc, cur) {
+                    return acc + cur
+                })
+            } else return '#ERROR: type does not match'
+            
         }
         function DIVIDE(...args) {
-            return args.reduce(function (acc, cur) {
-                return acc / cur
-            })
+            if(!args.some(isNaN)){
+                return args.reduce(function (acc, cur) {
+                    return acc / cur
+                })
+            } else return '#ERROR: type does not match'
+           
         }
         function GT(a,b) {
-            return (a > b ? true : false)
+            if(isNaN(a) || isNaN(b)){
+                return '#ERROR: type does not match'
+            } else return (a > b ? true : false)
+           
         }
         function EQ(a,b) {
-            return (a == b ? true : false)
+            if(isNaN(a) || isNaN(b)){
+                return '#ERROR: type does not match'
+            } else return (a == b ? true : false)
         }
         function NOT(a) {
-            return !a
+            if(typeof a == "boolean"){
+                return !a
+            } else return '#ERROR: type does not match'
         }
         function AND(...args) {
             
-        const includesNotABoolean = (element) => typeof element === 'string' || typeof element === 'number'
+            const isBoolean = val => 'boolean' === typeof val;
             
-            return (args.some(includesNotABoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
+            return (args.some(isBoolean) ? args.reduce(function (acc, cur) {
                 return acc && cur
-            }))
+            }) : '#ERROR: type does not match')
            
         }
         function OR(...args) {
-            const includesNotABoolean = (element) => typeof element === 'string' || typeof element === 'number'
-            return (args.some(includesNotABoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
+            const isBoolean = val => 'boolean' === typeof val;
+            return (args.some(isBoolean) ? args.reduce(function (acc, cur) {
                 return acc || cur
-            }))
+            }) : '#ERROR: type does not match')
+
         }
         function IF(condition, arg1, arg2) {
             if(condition) {
                 return arg1
-            } else return arg2
+            } else if(!condition) return arg2
+            else return '#ERROR: type does not match'
         }
         function CONCAT(...args) {
-            return args.reduce(function (acc, cur) {
+            const isString = val => 'string' === typeof val;
+            return (args.some(isString) ? args.reduce(function (acc, cur) {
                 return acc.concat(cur)
-            })
+            }) : '#ERROR: type does not match')
         }
 }
 

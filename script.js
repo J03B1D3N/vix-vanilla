@@ -9,12 +9,6 @@ async function ApiCall() {
 
     //initialise alphabet 
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
-
-    const StringifyObject = (arg) => {
-        return (
-            JSON.stringify(arg, null, 2)
-        )
-    }
     
 
     // loop through sheets
@@ -31,7 +25,7 @@ async function ApiCall() {
             for(let element = 0; element < information[sheet].data[data].length; element++) {
 
                 //create a variable with corresponding A1 notation and solve it immediatelly if possible.
-                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'scrapeInfo(information[sheet].data[data][element])' + ";")
+                eval('var ' + alphabet[element] + (data + 1) + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
 
                 //push the value of solved/unsolved variable into a queue
                 queue[data].push(eval(alphabet[element] + (data + 1)))
@@ -44,7 +38,7 @@ async function ApiCall() {
         for(let queueCount = 0; queueCount < queue.length; queueCount++) {
 
             queue[queueCount] = queue[queueCount].map(element => {
-                return processArgument(element)
+                return process(element)
             })
            
         }
@@ -82,7 +76,7 @@ async function ApiCall() {
 
                         const variable = 'var ' + alphabet[element] + (data + 1)
         
-                        eval(variable + '= ' + 'scrapeInfo(information[sheet].data[data][element])' + ";")
+                        eval(variable + '= ' + 'handleScraping(information[sheet].data[data][element])' + ";")
 
                         
                         newQueue[data].push(eval(alphabet[element] + (data + 1)))
@@ -147,11 +141,10 @@ async function ApiCall() {
     // const result = await response.json()
     // console.log(result)
 
-        console.log(StringifyObject(processedData)) 
-}
+
 
     //function which scrapes the info and solves the variable if it can.
-     function scrapeInfo(argument) {
+     function handleScraping(argument) {
 
         try{
     
@@ -162,7 +155,7 @@ async function ApiCall() {
     
                 if(argument.includes('=')){
 
-                    //skips the functions because often we cant solve them correctly without all variables being present.
+                    //skips the functions because often cant solve them correctly without all variables being present.
                     if(argument.includes("MULTIPLY") || argument.includes("SUM") || argument.includes("DIVIDE") || argument.includes("GT") || argument.includes("EQ") || argument.includes("NOT") || argument.includes("AND") || argument.includes("OR") || argument.includes("IF") || argument.includes("CONCAT")) {
                         return argument
                     } else {
@@ -191,7 +184,7 @@ async function ApiCall() {
 
     //practically same function like handleScraping(), but doesn't skip the functions because all of the variables have been
     //initialised and we can finally solve them.
-    function processArgument(argument) {
+    function process(argument) {
 
         try{
     
@@ -222,7 +215,6 @@ async function ApiCall() {
         }
 
     }
-    ApiCall();
 
 
         //function for multiplying any amount of arguments
@@ -295,4 +287,5 @@ async function ApiCall() {
         }
 
     
-
+}
+ApiCall();
