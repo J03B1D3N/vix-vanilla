@@ -224,8 +224,6 @@ describe('function tests', () => {
         expect(CONCAT(5, "spaghetti", "fusilli")).toBe("#ERROR: type does not match")
         expect(CONCAT('a','b','c','d','e','f','i','j')).toBe("abcdefij")
 
-
-
     })
 
 
