@@ -17,7 +17,7 @@ async function spreadsheetProcessor() {
         //loop through numbers (123456...)
         for(let data = 0; data < sheetBundle[sheet].data.length; data++){
         queue[data] = []
-  
+
             //loop through letters (ABCDFG...)
             for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
   
@@ -224,7 +224,12 @@ async function spreadsheetProcessor() {
         console.log(result)
     }
               
-    //checks if arguments is string
+    //checks if argument is not number
+    function isNotNumber(value) {
+        return 'number' !== typeof value || isNaN(value)
+    }
+    
+    //checks if arguments is not string
     function isNotString(value){
         return'string' !== typeof value
     }
@@ -233,77 +238,78 @@ async function spreadsheetProcessor() {
     function isNotBoolean(value){
         return 'boolean' !== typeof value;
     } 
-
+    
     //checks if all arguments are numbers, then multiplies them
     function MULTIPLY(...args) {
-        if(!args.some(isNaN)){
+        if(!args.some(isNotNumber)){
             return args.reduce(function (acc, cur) {
                 return acc * cur
             })
         } else return '#ERROR: type does not match'
     }
-
+    
     //checks if all arguments are numbers, then adds them together
     function SUM(...args) {
-        if(!args.some(isNaN)){
+        if(!args.some(isNotNumber)){
             return args.reduce(function (acc, cur) {
                 return acc + cur
             })
         } else return '#ERROR: type does not match'
     }
-
+    
     //checks if all arguments are numbers, then divides them
     function DIVIDE(...args) {
-        if(!args.some(isNaN)){
+        if(!args.some(isNotNumber)){
             return args.reduce(function (acc, cur) {
                 return acc / cur
             })
         } else return '#ERROR: type does not match'
     }
-
+    
     //checks if all arguments are numbers, then checks if first argument is greater than the other them
     function GT(a,b) {
-        if(isNaN(a) || isNaN(b)){
+        if(isNotNumber(a) || isNotNumber(b)){
             return '#ERROR: type does not match'
         } else return (a > b ? true : false)
     }
-
+    
     //checks if all arguments are of the same type, then equates their value them
     function EQ(a,b) {
-        if(typeof a === typeof b){
-            return (a == b ? true : false)
-        } else '#ERROR: type does not match'
+        if(isNotNumber(a) || isNotNumber(b)){
+            return '#ERROR: type does not match'
+        } else return (a == b ? true : false)
     }
-
+    
     //checks if argument is a boolean, then reverses it
     function NOT(a) {
         if(typeof a == "boolean"){
             return !a
         } else return '#ERROR: type does not match'
     }
-
+    
     //checks if all arguments are booleans, then runs the AND operator on them
     function AND(...args) {
         return (args.some(isNotBoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
             return acc && cur
         }))
     }
-
+    
     //checks if all arguments are booleans, then runs the OR operator on them
     function OR(...args) {
         return (args.some(isNotBoolean) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
             return acc || cur
         }))
     }
-
+    
     //IF statement. Returns error if condition is not a truthy or a falsy
     function IF(condition, arg1, arg2) {
-        if(condition) {
-            return arg1
-        } else if(!condition) return arg2
-        else return '#ERROR: type does not match'
+    
+        if(isNotBoolean(condition)){
+            return '#ERROR: type does not match'
+        } else return (condition ? arg1 : arg2)
+        
     }
-
+    
     //checks if all arguments are strings, then concacts them
     function CONCAT(...args) {
         return (args.some(isNotString) ? '#ERROR: type does not match' : args.reduce(function (acc, cur) {
@@ -311,4 +317,5 @@ async function spreadsheetProcessor() {
         }))
     }
 }
+
 spreadsheetProcessor();
