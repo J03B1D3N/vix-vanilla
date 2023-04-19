@@ -1,23 +1,14 @@
 # vix-vanilla
 
+If you want to run this app in a browser via live server, you need to install "CORS unblock" extention to your browser( I tested it on Chrome, everything works fine there. If errors happen, or CORS unblock is not available for your browser, consider using Chrome aswell). 
 
+Once installed CORS unblock, run the script on a live server and open the console.
 
-kai renderinam visus elementus, funkcijos ne visada buna array gale. vadinasi mums jas reikia padeti i queue, kuri prades veikti tik visiem elementam baigus renderintis.
+You can also run this app on node.js where no "CORS unblock" extention is needed.
 
-bet tada yra problema, kad tame queue negaliu prieiti variablu. Jeigu a, c ir d yra konkrecios values, bet b yra funkcija kuri dirba su a c ir d, as negaliu jos padet i sona kol baigsis renderintis a c ir d. nebent, as naudosiu promisus ir resolvinsiu b tik resolvinus visus kitus. this can work maybe. 
-
-probema su promisais yra tame kad as neturiu budo kaip 
-
-
-jeigu nesuveikia promisai, tada tiesiog prasausim antra FOR loopa. pirmas for loopas surenka visus duomenis, antras for loopas juos sutvarko ir sudeda i vietas. (nesu tikras kad suveiks)
-
-naudoti global variabla kaip indexa kuri mes ++ kiekviena karta kai iteritinam over the foor loopa. ir tada ta indexa naudojam antram for loopui kuris sudelioja sutvarkytas value i vieta.
--------------------------------------------------------------------------------------------------------------------------------
+To view the test suites run "npm install" to install Jest. 
 
 
 
-paskutinis sheetas sudetingas pasirodo.  jo rendering atbulai negaliu, nes tada paskutinis variable buna undefined.
-
-vadinasi turi buti forward renderinimas, bet backwards processinimas. 
 
 

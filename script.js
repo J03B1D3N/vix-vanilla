@@ -75,7 +75,6 @@ async function spreadsheetProcessor() {
             }
         }
     } 
-
     //modify the submission and sumbit it to the API
     returnProcessedInfoToTheApi()
     // end of app logic
@@ -211,10 +210,9 @@ async function spreadsheetProcessor() {
         let submission  = {
             "email": "justas.lapinas.98@gmail.com",
             "results": sheetBundle
-
         }
 
-        const response = await fetch("https://cors-anywhere.herokuapp.com/https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
+        const response = await fetch("https://www.wix.com/_serverless/hiring-task-spreadsheet-evaluator/verify/eyJ0YWdzIjpbXX0", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
