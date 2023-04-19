@@ -319,7 +319,7 @@ function spreadsheetProcessor(sheetBundle) {
     return sheetBundle
 }
 
-const blueprint = {"sheets": [
+const blueprint = [
     {
       "id": "sheet-0",
       "data": []
@@ -336,7 +336,7 @@ const blueprint = {"sheets": [
       ]
     }
 ]
-}
+
 
 
 
@@ -344,6 +344,10 @@ const blueprint = {"sheets": [
 
 describe('handles every kind of case we can think of', () => {
 
-it.todo('returns correctly solved spreadsheets in the A1 notation')
+it('returns correctly solved spreadsheets in the A1 notation', () => {
+
+ expect(spreadsheetProcessor(blueprint)).toBe(blueprint)
+
+})
 
 })
