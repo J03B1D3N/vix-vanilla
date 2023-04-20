@@ -8,7 +8,7 @@ function isNotString(value){
     return'string' !== typeof value
 }
 
-//checks if argument is not boolean
+//checks if argument is not booleangit 
 function isNotBoolean(value){
     return 'boolean' !== typeof value;
 } 

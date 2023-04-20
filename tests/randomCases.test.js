@@ -1,6 +1,10 @@
+
+
+//this is a modified version of the app that resides in script.js, that instead of calling an api, takes a sheetBundle as an
+//argument, processes it and returns it.
 function spreadsheetProcessor(sheetBundle) {
 
-    // const sheetBundle = await fetchSheets()
+     // const sheetBundle = await fetchSheets()
     
     //initialise alphabet
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
@@ -13,10 +17,22 @@ function spreadsheetProcessor(sheetBundle) {
 
         //clean the queue with each iteration 
         queue = []
+
+         //loop through numbers backwards(54321...)
+         for(let data = sheetBundle[sheet].data.length - 1; data > -1; data--){
+            queue[data] = []
+    
+            //loop through the letters backwards (ZYXWV...)
+            for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
+
+                const variable = alphabet[element] + (data + 1)
+            
+                eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+            }
+        }
   
         //loop through numbers (123456...)
         for(let data = 0; data < sheetBundle[sheet].data.length; data++){
-        queue[data] = []
 
             //loop through letters (ABCDFG...)
             for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
@@ -24,38 +40,11 @@ function spreadsheetProcessor(sheetBundle) {
                 //create a variable with corresponding A1 notation and solve it immediatelly if possible.
                 eval('var ' + alphabet[element] + (data + 1) + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
   
-                //push the value of solved/unsolved variable unto a queue
+                // //push the value of solved/unsolved variable unto a queue
                 queue[data].push(eval(alphabet[element] + (data + 1)))
             }
         }
 
-        //check for null value, which means that we weren't able to render all the variables front to back
-        //therefore we need to render them back to front
-        if(checkForNull(queue)){
-
-            //clean queue
-            queue = []
-                
-            //loop through numbers (12345...)
-            for(let data = 0; data < sheetBundle[sheet].data.length; data++){
-                queue[data] = []
-        
-                //loop through the letters back to front (ZYXWV...)
-                for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
-
-                    const variable = alphabet[element] + (data + 1)
-                
-                    eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
-        
-                    queue[data].push(eval(alphabet[element] + (data + 1)))
-                }
-
-                //reverse the queue so the variables are in correct order
-                queue[data].reverse()
-
-            }
-        }
-        
         //process(solve) the variables
         queue = handleProcessing(queue)
 
@@ -74,7 +63,7 @@ function spreadsheetProcessor(sheetBundle) {
                 }
             }
         }
-    } 
+    }
     //modify the submission and sumbit it to the API
     // returnProcessedInfoToTheApi()
     // end of app logic
@@ -175,7 +164,7 @@ function spreadsheetProcessor(sheetBundle) {
 
         catch {
 
-            return argument 
+            return "ERROR"
 
         }
     }
@@ -319,34 +308,295 @@ function spreadsheetProcessor(sheetBundle) {
     return sheetBundle
 }
 
-const blueprint = [
-    {
-      "id": "sheet-0",
-      "data": []
-    },
-    {
-      "id": "sheet-1",
-      "data": [
-        [
-          2,
-          4,
-          8,
-          16
-        ]
-      ]
-    }
-]
-
-
-
-
 
 
 describe('handles every kind of case we can think of', () => {
 
 it('returns correctly solved spreadsheets in the A1 notation', () => {
 
- expect(spreadsheetProcessor(blueprint)).toBe(blueprint)
+const blueprint = [
+        {
+          "id": "sheet-0",
+          "data": []
+        },
+        {
+          "id": "sheet-1",
+          "data": [
+            [
+              2,
+              4,
+              8,
+              16
+            ]
+          ]
+        }
+]
+
+ expect(spreadsheetProcessor(blueprint)).toEqual(blueprint)
+
+ const request1 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+            1,
+            2,
+            3,
+            "=C1"
+        ],
+        [
+            "=GT(A1, D1)",
+            "=A2",
+            "=A1",
+            "=C2"
+        ],
+        [
+            "=B3",
+            "=C3",
+            "=D3",
+            "=E3",
+            "=F3",
+            "=G3",
+            "=H3",
+            "Last"
+          ],
+          [
+            "=CONCAT(F3, ' and ', D3, ' and ', A3)"
+          ]
+      ]
+    }
+]
+
+const answer1 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+            1,
+            2,
+            3,
+            3
+        ],
+        [
+            false,
+            false,
+            1,
+            1
+        ],
+        [
+            "Last",
+            "Last",
+            "Last",
+            "Last",
+            "Last",
+            "Last",
+            "Last",
+            "Last"
+          ],
+          [
+            "Last and Last and Last"
+          ]
+      ]
+    }
+]
+
+ expect(spreadsheetProcessor(request1)).toEqual(answer1)
+
+ const request2 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+            1,
+            2,
+            3,
+            "=C1"
+        ],
+        [
+            "=GT(A1, D1)",
+            "=GREATER('lol', 5)",
+            "=A1",
+            "=C2"
+        ],
+      ]
+    }
+]
+
+const answer2 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          1,
+          2,
+          3,
+          3
+        ],
+        [
+          false,
+          "ERROR",
+          1,
+          1
+        ]
+      ]
+    }
+  ]
+
+ expect(spreadsheetProcessor(request2)).toEqual(answer2)
+
+ const request3 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          "=A0",
+          2,
+          3,
+          3
+        ],
+        [
+          false,
+          "=CONCAT(A1, A2)",
+          1,
+          1
+        ]
+      ]
+    }
+  ]
+
+  const answer3 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          "ERROR",
+          2,
+          3,
+          3
+        ],
+        [
+          false,
+          "#ERROR: type does not match",
+          1,
+          1
+        ]
+      ]
+    }
+  ]
+
+ expect(spreadsheetProcessor(request3)).toEqual(answer3)
+
+ const request4 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          
+        ],
+        [
+          
+        ],
+        [
+
+        ],
+        [
+
+        ],
+        [
+
+        ]
+      ]
+    }
+  ]
+  const answer4 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          
+        ],
+        [
+          
+        ],
+        [
+
+        ],
+        [
+
+        ],
+        [
+
+        ]
+      ]
+    }
+  ]
+
+ expect(spreadsheetProcessor(request4)).toEqual(answer4)
+
+ const request5 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          "=A2"
+        ],
+        [
+          "=A3"
+        ],
+        [
+          "=A4"
+        ],
+        [
+          "=A5"
+        ],
+        [
+          "=A6"
+        ],
+        [
+          "=A7"
+        ],
+        [
+          "Last"
+        ]
+      ]
+    }
+  ]
+  const answer5 = [
+    {
+      "id": "sheet-0",
+      "data": [
+        [
+          "Last"
+        ],
+        [
+          "Last"
+        ],
+        [
+          "Last"
+        ],
+        [
+          "Last"
+        ],
+        [
+          "Last"
+        ],
+        [
+          "Last"
+        ],
+        [
+          "Last"
+        ]
+      ]
+    }
+  ]
+
+ expect(spreadsheetProcessor(request5)).toEqual(answer5)
+
+ 
+
+
+ 
+
 
 })
 

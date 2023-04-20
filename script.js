@@ -13,10 +13,23 @@ async function spreadsheetProcessor() {
 
         //clean the queue with each iteration 
         queue = []
+
+         //loop through numbers backwards(54321...)
+         for(let data = sheetBundle[sheet].data.length - 1; data > -1; data--){
+            queue[data] = []
+    
+            //loop through the letters backwards (ZYXWV...)
+            for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
+
+                const variable = alphabet[element] + (data + 1)
+            
+                eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
+            }
+        }
   
+
         //loop through numbers (123456...)
         for(let data = 0; data < sheetBundle[sheet].data.length; data++){
-        queue[data] = []
 
             //loop through letters (ABCDFG...)
             for(let element = 0; element < sheetBundle[sheet].data[data].length; element++) {
@@ -24,40 +37,15 @@ async function spreadsheetProcessor() {
                 //create a variable with corresponding A1 notation and solve it immediatelly if possible.
                 eval('var ' + alphabet[element] + (data + 1) + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
   
-                //push the value of solved/unsolved variable unto a queue
+                // //push the value of solved/unsolved variable unto a queue
                 queue[data].push(eval(alphabet[element] + (data + 1)))
             }
         }
 
-        //check for null value, which means that we weren't able to render all the variables front to back
-        //therefore we need to render them back to front
-        if(checkForNull(queue)){
 
-            //clean queue
-            queue = []
-                
-            //loop through numbers (12345...)
-            for(let data = 0; data < sheetBundle[sheet].data.length; data++){
-                queue[data] = []
-        
-                //loop through the letters back to front (ZYXWV...)
-                for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
-
-                    const variable = alphabet[element] + (data + 1)
-                
-                    eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
-        
-                    queue[data].push(eval(alphabet[element] + (data + 1)))
-                }
-
-                //reverse the queue so the variables are in correct order
-                queue[data].reverse()
-
-            }
-        }
-        
         //process(solve) the variables
         queue = handleProcessing(queue)
+
 
         //return solved arguments into their place
         returnArguments(sheetBundle[sheet], queue)
@@ -74,9 +62,13 @@ async function spreadsheetProcessor() {
                 }
             }
         }
-    } 
+    }
+
+
     //modify the submission and sumbit it to the API
     returnProcessedInfoToTheApi()
+
+
     // end of app logic
 
 
@@ -175,7 +167,7 @@ async function spreadsheetProcessor() {
 
         catch {
 
-            return argument 
+            return "ERROR"
 
         }
     }
@@ -189,18 +181,6 @@ async function spreadsheetProcessor() {
             for( let element = 0; element < queue[data].length; element++) {
                 sheetBundle.data[data][element] = queue[data][element]
             }
-        }
-    }
-
-    //checks for null in queue[n]
-    function checkForNull(queue) {
-
-        for( let data = 0; data < queue.length; data++ ) {
-
-            if(queue[data].includes(null)) {
-
-                return true
-            } else return false
         }
     }
 
