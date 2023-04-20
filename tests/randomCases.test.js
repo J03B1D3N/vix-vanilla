@@ -1,10 +1,10 @@
 
 
-//this is a modified version of the app that resides in script.js, that instead of calling an api, takes a sheetBundle as an
-//argument, processes it and returns it.
+//this is a modified version of the app that resides in script.js, this version instead of calling an api, takes a sheetBundle
+//as an argument, processes it and returns it.
 function spreadsheetProcessor(sheetBundle) {
 
-     // const sheetBundle = await fetchSheets()
+    // const sheetBundle = await fetchSheets()
     
     //initialise alphabet
     var alphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
@@ -162,9 +162,9 @@ function spreadsheetProcessor(sheetBundle) {
 
         }
 
-        catch {
+        catch(error) {
 
-            return "ERROR"
+            return `${error}`
 
         }
     }
@@ -434,7 +434,7 @@ const answer2 = [
         ],
         [
           false,
-          "ERROR",
+          "ReferenceError: GREATER is not defined",
           1,
           1
         ]
@@ -469,7 +469,7 @@ const answer2 = [
       "id": "sheet-0",
       "data": [
         [
-          "ERROR",
+        "ReferenceError: A0 is not defined",
           2,
           3,
           3

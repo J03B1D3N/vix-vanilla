@@ -24,9 +24,7 @@ function spreadsheetProcessor(sheetBundle) {
                 const variable = alphabet[element] + (data + 1)
             
                 eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
-    
             }
-
         }
   
         //loop through numbers (123456...)
@@ -384,6 +382,358 @@ const request3 = [
     }
   ]
 
+  const reversed = [
+    {
+      "id": "sheet-23",
+      "data": [
+        [
+          "Last",
+          "=H1",
+          "=G1",
+          "=F1",
+          "=E1",
+          "=D1",
+          "=C1",
+          "=B1"
+        ]
+      ]
+    },
+    {
+      "id": "sheet-22",
+      "data": [
+        [
+          "First"
+        ],
+        [
+          "=A1"
+        ],
+        [
+          "=A2"
+        ],
+        [
+          "=A3"
+        ],
+        [
+          "=A4"
+        ],
+        [
+          "=A5"
+        ],
+        [
+          "=A6"
+        ]
+      ]
+    },
+    {
+      "id": "sheet-21",
+      "data": [
+        [
+          "=G1",
+          "=F1",
+          "=E1",
+          "=D1",
+          "=C1",
+          "=B1",
+          "=A1",
+          "First"
+        ]
+      ]
+    },
+    {
+      "id": "sheet-20",
+      "data": [
+        [
+          "=CONCAT(I1, \" is \", I2)",
+          "AZ",
+          "AW",
+          "AU",
+          "AT",
+          "AS",
+          "AR",
+          "AQ",
+          "AO",
+          "AN",
+          "AM",
+          "AL",
+          "AI",
+          "AG",
+          "AF",
+          "AE",
+          "AD",
+          "Codes"
+        ],
+        [
+          "-",
+          "Azerbaijan",
+          "Aruba",
+          "Australia",
+          "Austria",
+          "American Samoa",
+          "Argentina",
+          "Antarctica",
+          "Angola",
+          "Netherlands Antilles",
+          "Armenia",
+          "Albania",
+          "Anguilla",
+          "Antigua and Barbuda",
+          "Afghanistan",
+          "United Arab Emirates",
+          "Andorra",
+          "Names"
+        ]
+      ]
+    },
+    {
+      "id": "sheet-19",
+      "data": [
+        [
+          "=CONCAT(\"Hello\", \", \", \"World!\")"
+        ]
+      ]
+    },
+    {
+      "id": "sheet-18",
+      "data": [
+        [
+          "=IF(GT(A1, B1), A1, B1)",
+          21212,
+          21221
+        ]
+      ]
+    },
+    {
+      "id": "sheet-17",
+      "data": [
+        [
+          "=OR(A1, B1, C1)",
+          true,
+          false,
+          false
+        ]
+      ]
+    },
+    {
+      "id": "sheet-16",
+      "data": [
+        [
+          "=OR(A1, B1)",
+          false,
+          true
+        ],
+        [
+          "=OR(A2, B2)",
+          false,
+          false
+        ],
+        [
+          "=OR(A3, B3)",
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "sheet-15",
+      "data": [
+        [
+          "=AND(A1, B1)",
+          false,
+          true
+        ],
+        [
+          "=AND(A2, B2)",
+          true,
+          true
+        ],
+        [
+          "=AND(A3, B3)",
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "sheet-14",
+      "data": [
+        [
+          "=AND(A1, B1, C1)",
+          false,
+          true,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "sheet-13",
+      "data": [
+        [
+          "=NOT(D1)",
+          true,
+          false,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          false,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          "=NOT(E2)",
+          true,
+          true,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "sheet-12",
+      "data": [
+        [
+          "=EQ(A1, B2)",
+          10.75,
+          10.75
+        ],
+        [
+          "=EQ(A2, B2)",
+          10.74,
+          10.74
+        ]
+      ]
+    },
+    {
+      "id": "sheet-11",
+      "data": [
+        [
+          "=EQ(A1, B1)",
+          10.75,
+          10.75
+        ]
+      ]
+    },
+    {
+      "id": "sheet-10",
+      "data": [
+        [
+          "=GT(A1, B1)",
+          3,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "sheet-9",
+      "data": [
+        [
+          "=DIVIDE(A1, B1)",
+          3,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "sheet-8",
+      "data": [
+        [
+          "=DIVIDE(A1, B1)",
+          4,
+          6
+        ]
+      ]
+    },
+    {
+      "id": "sheet-7",
+      "data": [
+        [
+          "=MULTIPLY(A2, B1, C2)",
+          33,
+          22,
+          5
+        ],
+        [
+          11,
+          22,
+          55,
+          5
+        ]
+      ]
+    },
+    {
+      "id": "sheet-6",
+      "data": [
+        [
+          212,
+          22,
+          "=MULTIPLY(B1, C1)"
+        ]
+      ]
+    },
+    {
+      "id": "sheet-5",
+      "data": [
+        [
+          "=SUM(A1, 6, B1)",
+          212212,
+          22
+        ]
+      ]
+    },
+    {
+      "id": "sheet-4",
+      "data": [
+        [
+          212,
+          "=SUM(A1, B1, D1)",
+          22,
+          221212
+        ]
+      ]
+    },
+    {
+      "id": "sheet-3",
+      "data": [
+        [
+          "=SUM(A1, B1)",
+          212212,
+          22
+        ]
+      ]
+    },
+    {
+      "id": "sheet-2",
+      "data": [
+        [
+          "=C1",
+          22,
+          "=A1",
+          5
+        ]
+      ]
+    },
+    {
+      "id": "sheet-1",
+      "data": [
+        [
+          16,
+          8,
+          4,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "sheet-0",
+      "data": []
+    }
+  ]
 
 
-console.log(StringifyObject(spreadsheetProcessor(request5)))
+
+console.log(StringifyObject(spreadsheetProcessor(reversed)))

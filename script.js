@@ -13,16 +13,17 @@ async function spreadsheetProcessor() {
 
         //clean the queue with each iteration 
         queue = []
-
-         //loop through numbers backwards(54321...)
-         for(let data = sheetBundle[sheet].data.length - 1; data > -1; data--){
+        
+        //loop through numbers backwards(54321...)
+        for(let data = sheetBundle[sheet].data.length - 1; data > -1; data--){
             queue[data] = []
     
             //loop through the letters backwards (ZYXWV...)
             for(let element = sheetBundle[sheet].data[data].length - 1; element > -1; element--){
 
                 const variable = alphabet[element] + (data + 1)
-            
+
+                 //create a variable with corresponding A1 notation and solve it immediatelly if possible.
                 eval(variable + '= ' + 'scrapeTheArguments(sheetBundle[sheet].data[data][element])' + ";")
             }
         }
@@ -121,7 +122,7 @@ async function spreadsheetProcessor() {
 
         }
 
-        catch(error) {
+        catch {
             return argument 
         }
     }
@@ -165,9 +166,9 @@ async function spreadsheetProcessor() {
 
         }
 
-        catch {
+        catch (error) {
 
-            return "ERROR"
+            return `${error}`
 
         }
     }
